@@ -61,7 +61,7 @@ class Blitz extends Plugin
         ];
 
         $event = new RegisterComponentTypesEvent([
-            'types' => $purgerTypes
+            'types' => $purgerTypes,
         ]);
         Event::trigger(static::class, self::EVENT_REGISTER_PURGER_TYPES, $event);
 
