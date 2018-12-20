@@ -28,6 +28,21 @@
 	required: true,
 }) }}
 
+{% if purgerTypes|length %}
+	{% set info %}
+		<span class="info">{{ "Select a reverse proxy (CDN) to purge whenever the cache is cleared. This is important if the reverse proxy is caching your site’s HTML files. Search for “Blitz Purgers” in the plugin store to see if your reverse proxy is supported."|t('blitz') }}</span>
+	{% endset %}
+	{{ forms.selectField({
+		label: "Purge Reverse Proxy"|t('blitz'),
+		instructions: "A reverse proxy to purge whenever the cache is cleared."|t('blitz') ~ info,
+		warning: (config.purgerType is defined ? configWarning('purgerType')),
+		name: 'purgerType',
+		options: purgerTypes,
+		value: settings.purgerType,
+		required: true,
+	}) }}
+{% endif %}
+
 {% set info %}
 	<span class="info">{{ "Depending on the option selected, the server rewrite may need to be modified ([see the docs]({url}))."|t('blitz', {url: 'https://github.com/putyourlightson/craft-blitz#server-rewrite'}) }}</span>
 {% endset %}

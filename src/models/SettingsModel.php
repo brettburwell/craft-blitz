@@ -30,6 +30,11 @@ class SettingsModel extends Model
     /**
      * @var string
      */
+    public $purgerType = '';
+
+    /**
+     * @var string
+     */
     public $cacheFolderPath = 'cache/blitz';
 
     /**

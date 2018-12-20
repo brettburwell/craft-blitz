@@ -24,6 +24,8 @@ use craft\web\Response;
 use craft\web\twig\variables\CraftVariable;
 use craft\web\View;
 use putyourlightson\blitz\models\SettingsModel;
+use putyourlightson\blitz\purger\DummyPurger;
+use putyourlightson\blitz\purger\PurgerInterface;
 use putyourlightson\blitz\services\CacheService;
 use putyourlightson\blitz\services\FileService;
 use putyourlightson\blitz\utilities\CacheUtility;
@@ -39,6 +41,36 @@ use yii\base\Event;
  */
 class Blitz extends Plugin
 {
+    // Constants
+    // =========================================================================
+
+    const EVENT_REGISTER_PURGER_TYPES = 'eventRegisterPurgerTypes';
+
+    // Static
+    // =========================================================================
+
+    /**
+     * Returns all available purger classes.
+     *
+     * @return string[]
+     */
+    public static function getAllPurgerTypes(): array
+    {
+        $purgerTypes = [
+            DummyPurger::class,
+        ];
+
+        $event = new RegisterComponentTypesEvent([
+            'types' => $purgerTypes
+        ]);
+        Event::trigger(static::class, self::EVENT_REGISTER_PURGER_TYPES, $event);
+
+        return $event->types;
+    }
+
+    // Properties
+    // =========================================================================
+
     /**
      * @var Blitz
      */
@@ -123,9 +155,17 @@ class Blitz extends Plugin
      */
     protected function settingsHtml()
     {
+        $purgerTypes = ['' => Craft::t('blitz', 'None')];
+
+        /** @var PurgerInterface $purgerType */
+        foreach (self::getAllPurgerTypes() as $purgerType) {
+            $purgerTypes[$purgerType] = $purgerType::displayName();
+        }
+
         return Craft::$app->getView()->renderTemplate('blitz/_settings', [
             'settings' => $this->getSettings(),
             'config' => Craft::$app->getConfig()->getConfigFromFile('blitz'),
+            'purgerTypes' => $purgerTypes,
         ]);
     }
 
